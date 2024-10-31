@@ -1,0 +1,6 @@
+node_modules
+.serverless
+.env
+.env.dev
+.env.prod
+reference/policy.json
