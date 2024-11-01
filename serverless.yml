@@ -11,6 +11,18 @@ provider:
   runtime: nodejs20.x
   environment:
     DATABASE_URL: ${env:DATABASE_URL, "fallback value"}
+  iam:
+    role:
+      name: serverless-ssm-role
+      statement:
+        - Effect: 'Allow'
+          Resource: '*'
+          Action:
+            - "ssm:GetParameter"
+            - "ssm:GetParameters"
+            - "ssm:GetParametersByPath"
+            - "ssm:GetParameterHistory"
+            - "ssm:DescribeParameters"
 
 functions:
   api:

@@ -1,13 +1,27 @@
 const serverless = require("serverless-http");
 const express = require("express");
 const app = express();
+const AWS = require("aws-sdk");
 const { neon, neonConfig } = require("@neondatabase/serverless");
+const AWS_REGION = 'us-east-2';
+
+const ssm = new AWS.SSM({ region: AWS_REGION });
+
+const DATABASE_URL_SSM_PARAM = '/serverless-nodejs-api/prod/database_url';
+
+// remove aws-sdk before deploying because it makes node_modules too big
 
 async function dbClient() {
   // for http connections
   // non-pooling
+  const paramStoreData = await ssm.getParameter({ 
+    Name: DATABASE_URL_SSM_PARAM, 
+    // because it is encrypted, we need to decrypt it
+    WithDecryption: true
+  }).promise();
+  console.log(paramStoreData);
   neonConfig.fetchConnectionCache = true;
-  const sql = neon(process.env.DATABASE_URL);
+  const sql = neon(paramStoreData.Parameter.Value);
   return sql;
 }
 
